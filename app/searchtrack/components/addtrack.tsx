@@ -28,46 +28,63 @@ const addButton = ({trackID, artist, albumName, releaseDate, trackName, score, s
                 alert('Please sign in to add tracks')
                 return
             }
-            const streamData = await fetchTrackStreams(spotify_url)
-            console.log('Stream data:', streamData)
-            
 
-            const {data: uploadedTrack, error } = await supabase.from("tracks").insert([{
-                track_id: trackID,
-                artist_name: artist,
-                album_name: albumName,
-                track_name: trackName,
-                popularity: score,
-                spotify_streams: streamData.streamCount,
-                image_url: image_url,
-                release_date: releaseDate
-            }]).select().single()
+            const {data: checkData, error: checkError} = await supabase.from("tracks").select("*").eq("track_id", trackID).maybeSingle();
 
-
-            if (error) {
-                console.log('Error saving track: ', error)
-                return
-            } 
-            
-            if (!uploadedTrack) {
-                console.error('No track data returned')
-                return
-            }
-
-            console.log("Track saved successfully!")
-
-            const trackId = uploadedTrack.id
-
-            const {error: userTrackError} = await supabase.from('user_tracks').insert([{
-                user_id: user.id, 
-                track_id: trackId
-            }])
-
-            if (userTrackError) {
-                console.error('Error relating to user: ', userTrackError)
+            if (checkData) {
+                console.log("Track on system")
+                const {error: userTrackError} = await supabase.from('user_tracks').insert([{
+                    user_id: user.id, 
+                    track_id: checkData.id
+                }])
+    
+                if (userTrackError) {
+                    console.error('Error relating to user: ', userTrackError)
+                } else {
+                    console.log('Track added for user successfully')
+                    alert('Track added to your collection!')
+                }
             } else {
-                console.log('Track added for user successfully')
-                alert('Track added to your collection!')
+                const streamData = await fetchTrackStreams(spotify_url)
+                console.log('Stream data:', streamData)
+            
+
+                const {data: uploadedTrack, error } = await supabase.from("tracks").insert([{
+                    track_id: trackID,
+                    artist_name: artist,
+                    album_name: albumName,
+                    track_name: trackName,
+                    popularity: score,
+                    spotify_streams: streamData.streamCount,
+                    image_url: image_url,
+                    release_date: releaseDate
+                }]).select().single()
+
+                if (error) {
+                    console.log('Error saving track: ', error)
+                    return
+                } 
+                
+                if (!uploadedTrack) {
+                    console.error('No track data returned')
+                    return
+                }
+
+                console.log("Track saved successfully!")
+                
+                const trackId = uploadedTrack.id
+
+                const {error: userTrackError} = await supabase.from('user_tracks').insert([{
+                    user_id: user.id, 
+                    track_id: trackId
+                }])
+
+                if (userTrackError) {
+                    console.error('Error relating to user: ', userTrackError)
+                } else {
+                    console.log('Track added for user successfully')
+                    alert('Track added to your collection!')
+                }
             }
 
         } finally {
