@@ -3,6 +3,7 @@ import { useEffect, useState } from "react"
 import { getUser } from '@/lib/auth'
 import { createClient } from '@/utils/supabase/client'
 import Image from "next/image"
+import AvatarUpload from "./AvatarUpload"
 
 const ProfileHeader = () => {
     const [user, setUser] = useState<any>(null)
@@ -121,15 +122,13 @@ const ProfileHeader = () => {
         <>
             <div className="px-12 py-8 flex justify-center bg-gradient-to-b from-gray-50 to-white">
                 <div className="flex gap-8 max-w-7xl w-full bg-white rounded-2xl shadow-lg overflow-hidden">
-                    <div className="flex flex-col w-1/4 bg-gradient-to-br from-gray-50 to-gray-100 justify-center items-center p-10">
+                    <div className="flex flex-col w-1/4 bg-gradient-to-br from-gray-50 to-gray-300 justify-center items-center p-10">
                         <div className="relative mb-4">
                             <div className="absolute inset-0 bg-blue-500 rounded-full blur-xl opacity-20"></div>
-                            <Image 
-                                src='window.svg' 
-                                width={120} 
-                                height={120} 
-                                alt="Profile Picture" 
-                                className="relative rounded-full border-4 border-white shadow-xl"
+                            <AvatarUpload 
+                                userId={user.id} 
+                                currentAvatarUrl={profile?.avatar_url}
+                                onUploadComplete={(url) => setProfile({ ...profile, avatar_url: url })}
                             />
                         </div>
                         <div className="text-center">
@@ -152,6 +151,9 @@ const ProfileHeader = () => {
                             <p className="text-lg text-gray-600">
                                 {user.email}
                             </p>
+                        </div>
+                        <div>
+                            <p>I am producer who specialises in drill</p>
                         </div>
                         <div className="flex gap-4 pt-4 border-t border-gray-200">
                             <div className="flex-1 bg-black rounded-xl p-4">

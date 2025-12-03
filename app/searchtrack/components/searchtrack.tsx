@@ -70,7 +70,7 @@ const SearchTrack = () => {
 
                 {/* Results Section */}
                 {tracks.length > 0 && (
-                    <div className="w-2/3 flex flex-col pt-20">
+                    <div className="w-2/3 flex flex-col pt-20 bg-[#DFE0E2] px-10">
                         <h2 className="text-2xl font-bold mb-6">Search Results:</h2>
                         <div className="grid gap-4">
                                 {tracks.map((track) => (
