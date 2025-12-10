@@ -1,6 +1,6 @@
-import { createClient } from "@/utils/supabase/client"
 import { useState } from "react"
-import { fetchTrackStreams } from "@/services/ApifyAPI"
+import { createTrack } from "@/lib/database/tracks"
+import { searchYoutubeVideo } from "@/services/YoutubeApi"
 
 interface AddButtonProps {
     trackID: string
@@ -13,80 +13,33 @@ interface AddButtonProps {
     image_url: string
 }
 
-const addButton = ({trackID, artist, albumName, releaseDate, trackName, score, spotify_url, image_url}: AddButtonProps) => {
+const AddButton = ({trackID, artist, albumName, releaseDate, trackName, score, spotify_url, image_url}: AddButtonProps) => {
     const [loading, setLoading] = useState(false)
-    const supabase = createClient()
 
-    const addTrack = async () => {
-        console.log('Adding track:', trackID)
+    const handleAddTrack = async () => {
         try {
             setLoading(true)
-            const {data: {user}, error: userError} = await supabase.auth.getUser()
-
-            if (userError || !user) {
-                console.error('User not authenticated:', userError)
-                alert('Please sign in to add tracks')
-                return
-            }
-
-            const {data: checkData, error: checkError} = await supabase.from("tracks").select("*").eq("track_id", trackID).maybeSingle();
-
-            if (checkData) {
-                console.log("Track on system")
-                const {error: userTrackError} = await supabase.from('user_tracks').insert([{
-                    user_id: user.id, 
-                    track_id: checkData.id
-                }])
-    
-                if (userTrackError) {
-                    console.error('Error relating to user: ', userTrackError)
-                } else {
-                    console.log('Track added for user successfully')
-                    alert('Track added to your collection!')
-                }
-            } else {
-                const streamData = await fetchTrackStreams(spotify_url)
-                console.log('Stream data:', streamData)
             
+            const result = await createTrack({
+                trackID,
+                artist,
+                albumName,
+                releaseDate,
+                trackName,
+                score,
+                spotify_url,
+                image_url
+            })
 
-                const {data: uploadedTrack, error } = await supabase.from("tracks").insert([{
-                    track_id: trackID,
-                    artist_name: artist,
-                    album_name: albumName,
-                    track_name: trackName,
-                    popularity: score,
-                    spotify_streams: streamData.streamCount,
-                    image_url: image_url,
-                    release_date: releaseDate
-                }]).select().single()
-
-                if (error) {
-                    console.log('Error saving track: ', error)
-                    return
-                } 
-                
-                if (!uploadedTrack) {
-                    console.error('No track data returned')
-                    return
-                }
-
-                console.log("Track saved successfully!")
-                
-                const trackId = uploadedTrack.id
-
-                const {error: userTrackError} = await supabase.from('user_tracks').insert([{
-                    user_id: user.id, 
-                    track_id: trackId
-                }])
-
-                if (userTrackError) {
-                    console.error('Error relating to user: ', userTrackError)
-                } else {
-                    console.log('Track added for user successfully')
-                    alert('Track added to your collection!')
-                }
+            if (result.success) {
+                // Use a toast library instead of alert
+                alert(result.message)
+            } else {
+                alert(result.error)
             }
-
+        } catch (error) {
+            console.error('Error adding track:', error)
+            alert('An unexpected error occurred')
         } finally {
             setLoading(false)
         }
@@ -94,7 +47,7 @@ const addButton = ({trackID, artist, albumName, releaseDate, trackName, score, s
 
     return (
         <button
-            onClick={() => addTrack()}
+            onClick={handleAddTrack}
             disabled={loading}
             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
         >
@@ -103,4 +56,4 @@ const addButton = ({trackID, artist, albumName, releaseDate, trackName, score, s
     )
 }
 
-export default addButton
+export default AddButton
