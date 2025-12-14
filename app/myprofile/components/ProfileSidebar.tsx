@@ -7,8 +7,7 @@ interface ProfileSidebarProps {
     setActiveTab: (tab: 'tracks' | 'insights' | 'breakdown') => void
 }
 
-const ProfileSidebar = () => {
-    const [activeTab, setActiveTab] = useState('tracks')
+const ProfileSidebar = ({activeTab, setActiveTab}: ProfileSidebarProps) => {
     return (
         <>
             <div className="w-90 flex=shrink-0">

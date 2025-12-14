@@ -17,9 +17,10 @@ export default function MyProfile() {
             <div className="flex flex-col min-h-screen">
                 <ProfileHeader />
                 <div className = 'flex px-12 py-6 '>
-                    <ProfileSidebar />
+                    <ProfileSidebar activeTab={activeTab} setActiveTab={setActiveTab}/>
                     <div className="flex-1">
-                        <TrackSection />
+                        {activeTab === 'tracks' && <TrackSection />}
+                        {activeTab === 'insights' && <ProfileInsight />}
                     </div>
                 </div>
 
