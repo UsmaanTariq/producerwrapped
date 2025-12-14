@@ -3,7 +3,7 @@ import { useState, useEffect } from "react"
 import { createClient } from "@/utils/supabase/client"
 import { getUser } from "@/lib/auth"
 import { getProducerStats } from "@/lib/stats/getProducerStats"
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts'
+import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, BarChart, XAxis, YAxis, Bar } from 'recharts'
 
 const ProfileInsight = () => {
     const [user, setUser] = useState<any>(null)
@@ -132,6 +132,43 @@ const ProfileInsight = () => {
                         </div>
                     ) : (
                         <p className="text-gray-500 text-center py-8">No stream data available yet. Add some tracks to get started!</p>
+                    )}
+
+                    {/* Top Tracks Bar Chart */}
+                    {userStats?.topTracks && userStats.topTracks.length > 0 && (
+                        <div className="mt-8">
+                            <h2 className="text-2xl font-bold text-gray-800 mb-6">Top 5 Tracks</h2>
+                            <ResponsiveContainer width="100%" height={400}>
+                                <BarChart 
+                                    data={userStats.topTracks}
+                                    margin={{ top: 40, right: 30, left: 20, bottom: 80 }}
+                                >
+                                    <XAxis 
+                                        dataKey="track_name"
+                                        angle={0}
+                                        textAnchor="end"
+                                        height={100}
+                                        interval={0}
+                                        tick={{ fontSize: 11 }}
+                                    />
+                                    <YAxis hide />
+                                    <Tooltip 
+                                        formatter={(value: number) => value.toLocaleString()}
+                                        labelFormatter={(label) => `Track: ${label}`}
+                                    />
+                                    <Bar 
+                                        dataKey="total_streams" 
+                                        fill="#8884d8"
+                                        label={{
+                                            position: 'top',
+                                            formatter: (value: any) => typeof value === 'number' ? value.toLocaleString() : value,
+                                            fontSize: 12,
+                                            fill: '#374151'
+                                        }}
+                                    />
+                                </BarChart>
+                            </ResponsiveContainer>
+                        </div>
                     )}
                 </div>
             </div>
