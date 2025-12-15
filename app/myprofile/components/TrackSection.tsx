@@ -46,8 +46,9 @@ const TrackSection = () => {
             // Step 1: Get user's track IDs from user_tracks (include id for deletion)
             const { data: userTracksData, error: userTracksError } = await supabase
                 .from('user_tracks')
-                .select('id, track_id')
+                .select('id, track_id, role, notes')
                 .eq('user_id', currentUser.id)
+            
             
             if (userTracksError) {
                 console.error('Error fetching user tracks:', userTracksError)
@@ -87,6 +88,8 @@ const TrackSection = () => {
                 
                 return {
                     ...track,
+                    role: userTrack?.role || [],
+                    notes: userTrack?.notes || null,
                     user_track_id: userTrack?.id,
                     youtube_streams: latestStreams?.youtube_streams || 0,
                     spotify_streams_updated: latestStreams?.spotify_streams || track.spotify_streams
@@ -132,6 +135,8 @@ const TrackSection = () => {
                                 image_url={track.image_url}
                                 user_track_id={track.user_track_id}
                                 youtube_streams={track.youtube_streams}
+                                role={track.role}
+                                notes={track.notes}
                                 onDelete={handleTrackDeleted}
                             />
                         ))}

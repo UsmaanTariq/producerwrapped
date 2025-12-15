@@ -12,10 +12,12 @@ interface TrackProps {
     image_url: string
     user_track_id: number
     youtube_streams: number
+    role: string[]
+    notes: string
     onDelete?: (user_track_id: number) => void
 }
 
-const Track = ({ track_name, artist_name, album_name, popularity, streams, release_date, image_url, user_track_id, youtube_streams, onDelete }: TrackProps) => {
+const Track = ({ track_name, artist_name, album_name, popularity, streams, release_date, image_url, user_track_id, youtube_streams, role, notes, onDelete }: TrackProps) => {
     const formattedStreams = streams?.toLocaleString() || '0'
     const formattedYoutubeStreams = youtube_streams?.toLocaleString() || '0'
     
@@ -35,15 +37,18 @@ const Track = ({ track_name, artist_name, album_name, popularity, streams, relea
             {/* Track Info */}
             <div className="flex flex-col flex-1 justify-between py-1">
                 <div>
-                    <h1 className="text-xl font-bold text-gray-900 mb-1 line-clamp-1">
-                        {track_name}
-                    </h1>
-                    <h2 className="text-base text-gray-600 mb-1">
-                        {artist_name}
-                    </h2>
-                    <p className="text-sm text-gray-400">
-                        {album_name} • {release_date}
-                    </p>
+                    <div className='flex justify-between'>
+                        <h1 className="text-xl font-bold text-gray-900 mb-1 line-clamp-1">
+                            {track_name}
+                        </h1>
+                        <h2 className='text-gray-700 font-bold mb-1 line-clamp-1'>{role.join(', ')}</h2>
+                    </div>
+                        <h2 className="text-base text-gray-600 mb-1">
+                            {artist_name}
+                        </h2>
+                        <p className="text-sm text-gray-400">
+                            {album_name} • {release_date}
+                        </p>
                 </div>
 
                 {/* Stats */}
