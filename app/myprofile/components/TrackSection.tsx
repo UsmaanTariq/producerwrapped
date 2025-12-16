@@ -114,8 +114,8 @@ const TrackSection = () => {
 
     return (
         <>
-            <div className="px-16 py-6 flex justify-center bg-[#DFE0E2]">
-                <div className="flex flex-col max-w-7xl p-16 w-full rounded-2xl bg-gradient-to-br from-gray-50 to-gray-100  shadow-lg overflow-hidden">
+            <div className="flex justify-center bg-[#DFE0E2]">
+                <div className="flex flex-col max-w-12xl p-16 w-full bg-gradient-to-br from-gray-50 to-gray-100 shadow-lg overflow-hidden">
                     <div className="flex justify-between mb-2">
                         <h1 className="text-2xl font-bold">Your Credits</h1>
                         <input placeholder="Search Bar" className="p-3 border-2 rounded-md border-gray-200"></input>

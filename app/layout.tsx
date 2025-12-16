@@ -13,7 +13,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ProducerWrapped - Track Your Production Impact",
+  title: "StreamStar - Track Your Production Impact",
   description: "Discover how many streams your productions have generated. Track your beats, measure your impact.",
 };
 

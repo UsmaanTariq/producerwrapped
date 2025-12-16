@@ -65,12 +65,95 @@ export async function addTrackStreams({
     }      
 }
 
+// Helper function to process tracks in parallel batches
+async function processBatch(
+    tracks: any[],
+    supabase: any,
+    batchSize: number = 5
+) {
+    const results = {
+        success: 0,
+        failed: 0,
+        skipped: 0,
+        errors: [] as Array<{ track_id: string; error: string }>
+    }
+
+    // Process tracks in batches for better performance
+    for (let i = 0; i < tracks.length; i += batchSize) {
+        const batch = tracks.slice(i, i + batchSize)
+        
+        // Process this batch in parallel
+        const batchPromises = batch.map(async (track) => {
+            try {
+                // Get track links for this track
+                const { data: trackLinks, error: linksError } = await supabase
+                    .from('track_links')
+                    .select('*')
+                    .eq('spotify_id', track.track_id)
+                    .maybeSingle()
+
+                if (linksError) {
+                    console.error(`Error fetching links for ${track.track_id}:`, linksError)
+                    return { status: 'failed', track_id: track.track_id, error: 'Failed to fetch track links' }
+                }
+
+                if (!trackLinks || !trackLinks.spotify_url || !trackLinks.youtube_url) {
+                    console.log(`Skipping ${track.track_id} - missing links`)
+                    return { status: 'skipped', track_id: track.track_id }
+                }
+
+                // Update streams for this track
+                await addTrackStreams({
+                    spotify_id: track.track_id,
+                    spotify_url: trackLinks.spotify_url,
+                    youtube_url: trackLinks.youtube_url
+                })
+
+                console.log(`✅ Updated streams for ${track.track_id}`)
+                return { status: 'success', track_id: track.track_id }
+
+            } catch (error: any) {
+                console.error(`❌ Error updating ${track.track_id}:`, error)
+                return { 
+                    status: 'failed', 
+                    track_id: track.track_id, 
+                    error: error.message || 'Unknown error' 
+                }
+            }
+        })
+
+        // Wait for this batch to complete
+        const batchResults = await Promise.allSettled(batchPromises)
+        
+        // Aggregate results
+        batchResults.forEach((result) => {
+            if (result.status === 'fulfilled') {
+                const value = result.value
+                if (value.status === 'success') {
+                    results.success++
+                } else if (value.status === 'failed') {
+                    results.failed++
+                    results.errors.push({ track_id: value.track_id, error: value.error })
+                } else if (value.status === 'skipped') {
+                    results.skipped++
+                }
+            } else {
+                results.failed++
+            }
+        })
+
+        console.log(`Batch ${Math.floor(i / batchSize) + 1} completed: ${results.success} success, ${results.failed} failed, ${results.skipped} skipped`)
+    }
+
+    return results
+}
+
 export async function updateAllTrackStreams() {
     const supabase = createClient()
     
     console.log('Starting bulk track streams update...')
     
-    // Get all unique tracks from the tracks table
+    // Get all unique tracks with their links in a single query (optimization)
     const { data: tracks, error: tracksError } = await supabase
         .from('tracks')
         .select('track_id')
@@ -87,60 +170,14 @@ export async function updateAllTrackStreams() {
 
     console.log(`Found ${tracks.length} tracks to update`)
 
-    const results = {
-        success: 0,
-        failed: 0,
-        skipped: 0,
-        total: tracks.length,
-        errors: [] as Array<{ track_id: string; error: string }>
+    // Process tracks in parallel batches (5 at a time to avoid rate limits)
+    const results = await processBatch(tracks, supabase, 5)
+
+    const finalResults = {
+        ...results,
+        total: tracks.length
     }
 
-    // Process each track
-    for (const track of tracks) {
-        try {
-            // Get track links for this track
-            const { data: trackLinks, error: linksError } = await supabase
-                .from('track_links')
-                .select('*')
-                .eq('spotify_id', track.track_id)
-                .maybeSingle()
-
-            if (linksError) {
-                console.error(`Error fetching links for ${track.track_id}:`, linksError)
-                results.failed++
-                results.errors.push({ 
-                    track_id: track.track_id, 
-                    error: 'Failed to fetch track links' 
-                })
-                continue
-            }
-
-            if (!trackLinks || !trackLinks.spotify_url || !trackLinks.youtube_url) {
-                console.log(`Skipping ${track.track_id} - missing links`)
-                results.skipped++
-                continue
-            }
-
-            // Update streams for this track
-            await addTrackStreams({
-                spotify_id: track.track_id,
-                spotify_url: trackLinks.spotify_url,
-                youtube_url: trackLinks.youtube_url
-            })
-
-            console.log(`✅ Updated streams for ${track.track_id}`)
-            results.success++
-
-        } catch (error: any) {
-            console.error(`❌ Error updating ${track.track_id}:`, error)
-            results.failed++
-            results.errors.push({ 
-                track_id: track.track_id, 
-                error: error.message || 'Unknown error' 
-            })
-        }
-    }
-
-    console.log('Bulk update completed:', results)
-    return results
+    console.log('Bulk update completed:', finalResults)
+    return finalResults
 }

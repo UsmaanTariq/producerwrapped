@@ -41,7 +41,7 @@ const Track = ({ track_name, artist_name, album_name, popularity, streams, relea
                         <h1 className="text-xl font-bold text-gray-900 mb-1 line-clamp-1">
                             {track_name}
                         </h1>
-                        <h2 className='text-gray-700 font-bold mb-1 line-clamp-1'>{role.join(', ')}</h2>
+                        <h2 className='text-gray-700 font-bold mb-1 line-clamp-1 mr-10'>{role.join(', ')}</h2>
                     </div>
                         <h2 className="text-base text-gray-600 mb-1">
                             {artist_name}

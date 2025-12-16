@@ -122,7 +122,7 @@ const ProfileHeader = () => {
 
     return (
         <>
-            <div className="px-12 py-8 flex justify-center bg-gradient-to-b from-gray-50 to-white">
+            <div className="px-12 py-8 flex justify-center bg-[#DFE0E2]">
                 <div className="flex gap-8 max-w-7xl w-full bg-white rounded-2xl shadow-lg overflow-hidden">
                     <div className="flex flex-col w-1/4 bg-gradient-to-br from-gray-50 to-gray-300 justify-center items-center p-10">
                         <div className="relative mb-4">
