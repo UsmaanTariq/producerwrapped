@@ -27,6 +27,13 @@ export interface ProducerStats {
         spotify_streams: number
         youtube_streams: number
     }>
+    streamsByArtist: Array<{
+        artist: string
+        total_streams: number
+        spotify_streams: number
+        youtube_streams: number
+        track_count: number
+    }>
 }
 
 export async function getProducerStats(userId: string) {
@@ -85,6 +92,13 @@ function calculateStats(tracks: any[], userTracks: any[], recentStreams: any[]):
         youtube: number
     }>()
 
+    const artistStreamsMap = new Map<string, {
+        spotify: number,
+        youtube: number,
+        trackCount: number
+    }
+    >()
+
     tracks.forEach(track => {
         const latestStreams = track.track_streams?.[0] || 0
         const spotifyStreams = latestStreams.spotify_streams || 0
@@ -123,6 +137,19 @@ function calculateStats(tracks: any[], userTracks: any[], recentStreams: any[]):
                 })
             })
         }
+
+        const artist = track.artist_name
+        const artistExisting = artistStreamsMap.get(artist) || { 
+            spotify: 0, 
+            youtube: 0, 
+            trackCount: 0 
+        }
+
+        artistStreamsMap.set(artist, {
+            spotify: artistExisting.spotify + spotifyStreams,
+            youtube: artistExisting.youtube + youtubeStreams,
+            trackCount: artistExisting.trackCount + 1
+        })
     })
 
     // Process streams by date (past 7 days)
@@ -171,6 +198,16 @@ function calculateStats(tracks: any[], userTracks: any[], recentStreams: any[]):
         }))
         .sort((a, b) => b.total_streams - a.total_streams)
     
+    const streamsByArtist = Array.from(artistStreamsMap.entries())
+        .map(([artist, data]) => ({
+            artist,
+            total_streams: data.spotify + data.youtube,
+            spotify_streams: data.spotify,
+            youtube_streams: data.youtube,
+            track_count: data.trackCount
+        }))
+        .sort((a, b) => b.total_streams - a.total_streams)
+
     return {
         totalStreams: {
             spotify: totalSpotify,
@@ -180,7 +217,8 @@ function calculateStats(tracks: any[], userTracks: any[], recentStreams: any[]):
         trackCount: tracks.length,
         topTracks: topTracks,
         streamsByRole: streamsByRole,
-        streamsByDate: filledStreamsByDate
+        streamsByDate: filledStreamsByDate,
+        streamsByArtist: streamsByArtist
     }
 }
 
@@ -234,6 +272,7 @@ function getEmptyStats(): ProducerStats {
         trackCount: 0,
         topTracks: [],
         streamsByRole: [],
-        streamsByDate: []
+        streamsByDate: [],
+        streamsByArtist: []
     }
 }

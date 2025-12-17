@@ -18,13 +18,10 @@ export default function Home() {
         {/* Hero Content */}
         <div className="relative z-10 max-w-7xl mx-auto px-6 pt-20 pb-16 lg:px-8">
           <div className="text-center">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white rounded-full border border-gray-200 shadow-sm mb-8">
-              <span className="w-2 h-2 bg-emerald-500 rounded-full"></span>
-              <span className="text-sm text-gray-700 font-medium">Track Your Producer Impact</span>
-            </div>
+            
             
             <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-6 leading-tight">
-              Your Beats,<br/>
+              Your Songs,<br/>
               <span className="text-gray-600">
                 Your Streams,
               </span><br/>

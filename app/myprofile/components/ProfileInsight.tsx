@@ -48,10 +48,12 @@ const ProfileInsight = () => {
         let cancelled = false;
         try {
           const userData = await getProducerStats(user.id);
+          console.log(userData)
           if (!cancelled) setUserStats(userData);
         } finally {
           if (!cancelled) setLoading(false);
         }
+        
       
         return () => { cancelled = true; };
       };
@@ -206,6 +208,9 @@ const ProfileInsight = () => {
                                                 height={70}
                                                 interval={0}
                                                 tick={{ fontSize: 12 }}
+                                                tickFormatter={(value: string) => 
+                                                    value.length > 15 ? `${value.substring(0, 15)}...` : value
+                                                }
                                             />
                                             <YAxis hide />
                                             <Tooltip 
