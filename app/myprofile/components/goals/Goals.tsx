@@ -1,6 +1,7 @@
 'use client'
 
 import AddGoal from "./AddGoal";
+import GoalsSection from "./GoalsSection";
 
 
 const Goals = () => {
@@ -13,6 +14,7 @@ const Goals = () => {
                         <h1 className="text-xl font-bold">Your Goals</h1>
                         <AddGoal />
                     </div>
+                    <GoalsSection />
                 </div>
             </div>
         </>
