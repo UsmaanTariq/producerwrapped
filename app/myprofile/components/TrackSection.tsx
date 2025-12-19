@@ -73,7 +73,7 @@ const TrackSection = () => {
             if (tracksError) {
                 console.error('Error fetching tracks:', tracksError)
                 return
-            }
+}
 
             // Step 4: Merge user_tracks.id with tracks data
             const mergedData = tracksData?.map((track: any) => {
@@ -81,9 +81,11 @@ const TrackSection = () => {
                 const userTrack = userTracksData.find((ut: any) => Number(ut.track_id) === Number(track.id))
                 console.log('Track ID:', track.id, 'Found userTrack:', userTrack)
                 
-                // Get the latest track_streams entry (it's an array)
+                // Get the latest track_streams entry by sorting by update_date
                 const latestStreams = track.track_streams && track.track_streams.length > 0 
-                    ? track.track_streams[0] 
+                    ? [...track.track_streams].sort((a: any, b: any) => 
+                        new Date(b.update_date || b.created_at).getTime() - new Date(a.update_date || a.created_at).getTime()
+                    )[0]  // Get the most recent entry
                     : null
                 
                 return {

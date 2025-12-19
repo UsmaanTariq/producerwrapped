@@ -1,14 +1,14 @@
 'use client'
-import { useState, useEffect } from "react"
-import { createClient } from "@/utils/supabase/client"
-import { getUser } from "@/lib/auth"
-import { getProducerStats } from "@/lib/stats/getProducerStats"
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, BarChart, XAxis, YAxis, Bar, AreaChart, Area } from 'recharts'
-import { useProfileInsights } from "@/hooks/useProfileInsight"
 import StreamsByArtist from "./graphs/StreamsByArtist"
 
-const ProfileInsight = () => {
-    const { user, userStats, loading, error} = useProfileInsights()
+interface ProfileInsightProps {
+    userStats?: any
+    loading?: boolean
+    error?: string | null
+}
+
+const ProfileInsight = ({ userStats, loading, error }: ProfileInsightProps) => {
     console.log(userStats)
 
     if (loading) {
@@ -21,8 +21,14 @@ const ProfileInsight = () => {
         )
     }
 
-    if (!user) {
-        return null
+    if (error) {
+        return (
+            <div className="px-16 py-6 flex justify-center bg-[#DFE0E2]">
+                <div className="flex flex-col max-w-7xl w-full rounded-2xl bg-gradient-to-br from-gray-50 to-gray-100 shadow-lg overflow-hidden p-6">
+                    <p className="text-red-500">Error loading insights: {error}</p>
+                </div>
+            </div>
+        )
     }
 
     return (

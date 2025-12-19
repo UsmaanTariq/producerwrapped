@@ -4,15 +4,16 @@ import { getUser } from '@/lib/auth'
 import { createClient } from '@/utils/supabase/client'
 import Image from "next/image"
 import AvatarUpload from "./AvatarUpload"
-import { getProducerStats } from "@/lib/stats/getProducerStats"
 
-const ProfileHeader = () => {
+interface ProfileHeaderProps {
+    userStats?: any
+    loading?: boolean
+}
+
+const ProfileHeader = ({ userStats, loading: statsLoading }: ProfileHeaderProps) => {
     const [user, setUser] = useState<any>(null)
     const [loading, setLoading] = useState(true)
     const [profile, setProfile] = useState<any>(null)
-    const [totalStreams, setTotalStreams] = useState<number>(0)
-    const [trackCount, setTrackCount] = useState<number>(0)
-    const [userStats, setUserStats] = useState<any>(null)
 
     useEffect(() => {
         // Check user on mount
@@ -52,58 +53,13 @@ const ProfileHeader = () => {
             console.log('Profile data:', data)
             setProfile(data)
 
-            const stats = await getProducerStats(currentUser.id)
-            setUserStats(stats)
-
         } catch (error) {
             console.log('Catch error:', error)
         } finally {
             setLoading(false)
         }
     }
-    
-    const countStreams = async (userId: string) => {
-        const supabase = createClient()
 
-        // Get user's track IDs
-        const { data: userTracks, error: userTracksError } = await supabase
-            .from('user_tracks')
-            .select('track_id')
-            .eq('user_id', userId)
-
-        if (userTracksError || !userTracks) {
-            console.error('Error fetching user tracks:', userTracksError)
-            return
-        }
-
-        if (userTracks.length === 0) {
-            setTotalStreams(0)
-            setTrackCount(0)
-            return
-        }
-
-        // Get track IDs
-        const trackIds = userTracks.map((ut: any) => ut.track_id)
-        setTrackCount(trackIds.length)
-
-        // Get streams from tracks
-        const { data: tracks, error: tracksError } = await supabase
-            .from('tracks')
-            .select('spotify_streams')
-            .in('id', trackIds)
-
-        if (tracksError || !tracks) {
-            console.error('Error fetching tracks:', tracksError)
-            return
-        }
-
-        // Sum all streams
-        const total = tracks.reduce((sum: number, track: any) => {
-            return sum + (track.spotify_streams || 0)
-        }, 0)
-
-        setTotalStreams(total)
-    }
     if (loading) {
         return (
             <div className="px-12 py-6 flex justify-center items-center min-h-[300px]">
@@ -158,12 +114,14 @@ const ProfileHeader = () => {
                             <div className="flex-1 bg-black rounded-xl p-4">
                                 <p className="text-sm text-white mb-1">Total Streams</p>
                                 <p className="text-lg font-semibold text-white">
-                                    {userStats?.totalStreams?.total?.toLocaleString() || '0'}
+                                    {statsLoading ? 'Loading...' : (userStats?.totalStreams?.total?.toLocaleString() || '0')}
                                 </p>
                             </div>
                             <div className="flex-1 bg-gray-50 rounded-xl p-4">
                                 <p className="text-sm text-gray-500 mb-1">Tracks Produced</p>
-                                <p className="text-lg font-semibold text-gray-800">{userStats?.trackCount || trackCount}</p>
+                                <p className="text-lg font-semibold text-gray-800">
+                                    {statsLoading ? 'Loading...' : (userStats?.trackCount || '0')}
+                                </p>
                             </div>
                             <div className="flex-1 bg-gray-50 rounded-xl p-4">
                                 <p className="text-sm text-gray-500 mb-1">Member Since</p>

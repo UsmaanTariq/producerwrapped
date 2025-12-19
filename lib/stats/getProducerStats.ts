@@ -100,9 +100,15 @@ function calculateStats(tracks: any[], userTracks: any[], recentStreams: any[]):
     >()
 
     tracks.forEach(track => {
-        const latestStreams = track.track_streams?.[0] || 0
-        const spotifyStreams = latestStreams.spotify_streams || 0
-        const youtubeStreams = latestStreams.youtube_streams || 0
+        const sortedStreams = track.track_streams && track.track_streams.length > 0
+            ? [...track.track_streams].sort((a: any, b: any) => 
+                new Date(b.update_date || b.created_at).getTime() - new Date(a.update_date || a.created_at).getTime()
+              )
+            : []
+        
+        const latestStreams = sortedStreams[0] || null
+        const spotifyStreams = latestStreams?.spotify_streams || 0
+        const youtubeStreams = latestStreams?.youtube_streams || 0
 
         totalSpotify += spotifyStreams
         totalYoutube += youtubeStreams
