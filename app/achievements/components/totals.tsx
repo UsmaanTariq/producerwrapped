@@ -7,15 +7,15 @@ interface TotalsProps {
 const Totals = ({ totalStreams, youtubeStreams, spotifyStreams }: TotalsProps) => {
     return (
         <>
-            <div className="flex gap-2 items-center justify-center">
-                <div className="flex border-1 border-gray-600 p-4">
-                    <h1>Total Streams: {totalStreams}</h1>
+            <div className="flex gap-2 items-center justify-center w-full p-2 py-4 ">
+                <div className="flex border border-gray-300 rounded-xl p-8 bg-white shadow-md w-1/3">
+                    <h1 className="text-xl">Total Streams: {totalStreams.toLocaleString()}</h1>
                 </div>
-                <div className="flex border-1 border-gray-600 p-4">
-                    <h1>Spotify Streams: {spotifyStreams}</h1>
+                <div className="flex border border-gray-300 rounded-xl p-8 bg-white shadow-md w-1/3">
+                    <h1 className="text-xl">Spotify Streams: {spotifyStreams.toLocaleString()}</h1>
                 </div>
-                <div className="flex border-1 border-gray-600 p-4">
-                    <h1>YouTube Streams: {youtubeStreams}</h1>
+                <div className="flex border border-gray-300 rounded-xl p-8 bg-white shadow-md w-1/3">
+                    <h1 className="text-xl">YouTube Streams: {youtubeStreams.toLocaleString()}</h1>
                 </div>
             </div>
         </>

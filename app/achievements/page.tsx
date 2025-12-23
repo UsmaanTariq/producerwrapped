@@ -5,6 +5,7 @@ import { toPng, toJpeg } from "html-to-image"
 import { useProfileInsights } from "@/hooks/useProfileInsight"
 import Navbar from "../components/navbar"
 import Totals from "./components/totals"
+import UserInfo from "./components/UserInfo"
 
 export default function ProducerWrapped() {
     const { user, userProfile, userStats, loading, error } = useProfileInsights()
@@ -55,9 +56,9 @@ export default function ProducerWrapped() {
     return (
         <>
             <Navbar />
-            <div className="min-h-screen bg-gray-50 py-8 flex items-center">
-                <div className="container mx-auto px-4">
-                    <h1>{userProfile?.user_name}</h1>
+            <div className="min-h-screen bg-gray-50 py-8 flex items-center justify-center">
+                <div className="container mx-auto px-4 max-w-7xl">
+                    <UserInfo userProfile={userProfile} />
                     <Totals 
                         totalStreams={totalStreams} 
                         youtubeStreams={youtubeStreams} 
