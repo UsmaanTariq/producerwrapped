@@ -6,6 +6,19 @@ export interface ProducerStats {
         youtube: number
         total: number
     }
+    previousDayStreams: {
+        spotify: number
+        youtube: number
+        total: number
+    }
+    streamChange: {
+        spotify: number
+        youtube: number
+        total: number
+        spotifyPercent: number
+        youtubePercent: number
+        totalPercent: number
+    }
     trackCount: number
     topTracks: Array<{
         track_name: string
@@ -82,8 +95,15 @@ export async function getProducerStats(userId: string) {
 function calculateStats(tracks: any[], userTracks: any[], recentStreams: any[]): ProducerStats {
     let totalSpotify = 0
     let totalYoutube = 0
+    let previousDaySpotify = 0
+    let previousDayYoutube = 0
     let topTracksData: any[] = []
     let trackReleaseDates: Array<{ release_date: string, track_name: string }> = []
+    
+    // Get yesterday's date
+    const yesterday = new Date()
+    yesterday.setDate(yesterday.getDate() - 1)
+    const yesterdayStr = yesterday.toISOString().split('T')[0]
     
     // Map to aggregate streams by role
     const roleStreamsMap = new Map<string, { 
@@ -112,12 +132,22 @@ function calculateStats(tracks: any[], userTracks: any[], recentStreams: any[]):
               )
             : []
         
+        // Get latest (today's) streams
         const latestStreams = sortedStreams[0] || null
         const spotifyStreams = latestStreams?.spotify_streams || 0
         const youtubeStreams = latestStreams?.youtube_streams || 0
 
+        // Get yesterday's streams
+        const yesterdayStreams = sortedStreams.find((s: any) => 
+            (s.update_date || s.created_at)?.split('T')[0] === yesterdayStr
+        )
+        const yesterdaySpotify = yesterdayStreams?.spotify_streams || 0
+        const yesterdayYoutube = yesterdayStreams?.youtube_streams || 0
+
         totalSpotify += spotifyStreams
         totalYoutube += youtubeStreams
+        previousDaySpotify += yesterdaySpotify
+        previousDayYoutube += yesterdayYoutube
 
         topTracksData.push({
             track_name: track.track_name,
@@ -229,11 +259,36 @@ function calculateStats(tracks: any[], userTracks: any[], recentStreams: any[]):
         }))
         .sort((a, b) => b.total_streams - a.total_streams)
 
+    // Calculate changes from previous day
+    const spotifyChange = totalSpotify - previousDaySpotify
+    const youtubeChange = totalYoutube - previousDayYoutube
+    const totalChange = (totalSpotify + totalYoutube) - (previousDaySpotify + previousDayYoutube)
+    
+    // Calculate percentage changes (avoid division by zero)
+    const spotifyPercent = previousDaySpotify > 0 ? ((spotifyChange / previousDaySpotify) * 100) : 0
+    const youtubePercent = previousDayYoutube > 0 ? ((youtubeChange / previousDayYoutube) * 100) : 0
+    const totalPercent = (previousDaySpotify + previousDayYoutube) > 0 
+        ? ((totalChange / (previousDaySpotify + previousDayYoutube)) * 100) 
+        : 0
+
     return {
         totalStreams: {
             spotify: totalSpotify,
             youtube: totalYoutube,
             total: totalSpotify + totalYoutube
+        },
+        previousDayStreams: {
+            spotify: previousDaySpotify,
+            youtube: previousDayYoutube,
+            total: previousDaySpotify + previousDayYoutube
+        },
+        streamChange: {
+            spotify: spotifyChange,
+            youtube: youtubeChange,
+            total: totalChange,
+            spotifyPercent: spotifyPercent,
+            youtubePercent: youtubePercent,
+            totalPercent: totalPercent
         },
         trackCount: tracks.length,
         topTracks: topTracks,
@@ -290,6 +345,19 @@ function getEmptyStats(): ProducerStats {
             spotify: 0,
             youtube: 0,
             total: 0
+        },
+        previousDayStreams: {
+            spotify: 0,
+            youtube: 0,
+            total: 0
+        },
+        streamChange: {
+            spotify: 0,
+            youtube: 0,
+            total: 0,
+            spotifyPercent: 0,
+            youtubePercent: 0,
+            totalPercent: 0
         },
         trackCount: 0,
         topTracks: [],

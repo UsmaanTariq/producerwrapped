@@ -43,6 +43,21 @@ export async function getArtistTracks(artistId: string) {
     return data
 }
 
+export async function getFeaturedPlaylist() {
+    const baseUrl = getBaseUrl()
+    const response = await fetch(`${baseUrl}/api/spotify/search-playlists`)
+
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }))
+        console.error('API error response:', errorData)
+        throw new Error(`Failed to get featured playlists: ${response.status} ${response.statusText} - ${JSON.stringify(errorData)}`)
+    }
+
+    const data = await response.json()
+    // matches `{ playlists: searchData.playlists.items }` from the API route
+    return data.playlists
+}
+
 const _getGenres = async (token: string) => {
     const result = await fetch('https://api.spotify.com/v1/browse/categories', {
         method: 'GET',

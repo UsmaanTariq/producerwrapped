@@ -79,7 +79,7 @@ const EditTrack = ({user_track_id, artist, albumName, releaseDate, trackName, ro
                 <Edit/>
             </button>
             {showModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4">
+                <div className="fixed inset-0 bg-black bg-opacity-20 flex items-center justify-center z-50 p-4">
                     <div className="bg-white rounded-lg shadow-xl max-w-lg w-full p-6 relative">
                         <div className="flex justify-between items-center mb-4">
                             <h1 className="text-xl font-bold">Edit Track</h1>

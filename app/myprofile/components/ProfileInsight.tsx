@@ -107,11 +107,29 @@ const ProfileInsight = ({ userStats, loading, error }: ProfileInsightProps) => {
                                 </div>
                                 <div>
                                     <p className="text-sm font-medium text-neutral-500 mb-1">Spotify Streams</p>
-                                    <p className="text-3xl font-bold text-neutral-900">
-                                        {formatNumber(userStats.totalStreams.spotify)}
-                                    </p>
+                                    <div className="flex items-baseline gap-2">
+                                        <p className="text-3xl font-bold text-neutral-900">
+                                            {formatNumber(userStats.totalStreams.spotify)}
+                                        </p>
+                                        {userStats.streamChange?.spotify !== 0 && (
+                                            <span className={`text-sm font-semibold flex items-center gap-1 ${
+                                                userStats.streamChange.spotify > 0 ? 'text-green-600' : 'text-red-600'
+                                            }`}>
+                                                {userStats.streamChange.spotify > 0 ? '↑' : '↓'}
+                                                {formatNumber(Math.abs(userStats.streamChange.spotify))}
+                                            </span>
+                                        )}
+                                    </div>
                                     <p className="text-xs text-neutral-400 mt-1">
                                         {userStats.totalStreams.spotify.toLocaleString()} total plays
+                                        {userStats.streamChange?.spotifyPercent !== 0 && (
+                                            <span className={`ml-2 font-medium ${
+                                                userStats.streamChange.spotifyPercent > 0 ? 'text-green-600' : 'text-red-600'
+                                            }`}>
+                                                ({userStats.streamChange.spotifyPercent > 0 ? '+' : ''}
+                                                {userStats.streamChange.spotifyPercent.toFixed(1)}% from yesterday)
+                                            </span>
+                                        )}
                                     </p>
                                 </div>
                             </div>
@@ -130,11 +148,29 @@ const ProfileInsight = ({ userStats, loading, error }: ProfileInsightProps) => {
                                 </div>
                                 <div>
                                     <p className="text-sm font-medium text-neutral-500 mb-1">YouTube Views</p>
-                                    <p className="text-3xl font-bold text-neutral-900">
-                                        {formatNumber(userStats.totalStreams.youtube)}
-                                    </p>
+                                    <div className="flex items-baseline gap-2">
+                                        <p className="text-3xl font-bold text-neutral-900">
+                                            {formatNumber(userStats.totalStreams.youtube)}
+                                        </p>
+                                        {userStats.streamChange?.youtube !== 0 && (
+                                            <span className={`text-sm font-semibold flex items-center gap-1 ${
+                                                userStats.streamChange.youtube > 0 ? 'text-green-600' : 'text-red-600'
+                                            }`}>
+                                                {userStats.streamChange.youtube > 0 ? '↑' : '↓'}
+                                                {formatNumber(Math.abs(userStats.streamChange.youtube))}
+                                            </span>
+                                        )}
+                                    </div>
                                     <p className="text-xs text-neutral-400 mt-1">
                                         {userStats.totalStreams.youtube.toLocaleString()} total views
+                                        {userStats.streamChange?.youtubePercent !== 0 && (
+                                            <span className={`ml-2 font-medium ${
+                                                userStats.streamChange.youtubePercent > 0 ? 'text-green-600' : 'text-red-600'
+                                            }`}>
+                                                ({userStats.streamChange.youtubePercent > 0 ? '+' : ''}
+                                                {userStats.streamChange.youtubePercent.toFixed(1)}% from yesterday)
+                                            </span>
+                                        )}
                                     </p>
                                 </div>
                             </div>
@@ -153,11 +189,29 @@ const ProfileInsight = ({ userStats, loading, error }: ProfileInsightProps) => {
                                 </div>
                                 <div>
                                     <p className="text-sm font-medium text-neutral-400 mb-1">Total Reach</p>
-                                    <p className="text-3xl font-bold text-white">
-                                        {formatNumber(userStats.totalStreams.total)}
-                                    </p>
+                                    <div className="flex items-baseline gap-2">
+                                        <p className="text-3xl font-bold text-white">
+                                            {formatNumber(userStats.totalStreams.total)}
+                                        </p>
+                                        {userStats.streamChange?.total !== 0 && (
+                                            <span className={`text-sm font-semibold flex items-center gap-1 ${
+                                                userStats.streamChange.total > 0 ? 'text-green-400' : 'text-red-400'
+                                            }`}>
+                                                {userStats.streamChange.total > 0 ? '↑' : '↓'}
+                                                {formatNumber(Math.abs(userStats.streamChange.total))}
+                                            </span>
+                                        )}
+                                    </div>
                                     <p className="text-xs text-neutral-500 mt-1">
                                         Across all platforms
+                                        {userStats.streamChange?.totalPercent !== 0 && (
+                                            <span className={`ml-2 font-medium ${
+                                                userStats.streamChange.totalPercent > 0 ? 'text-green-400' : 'text-red-400'
+                                            }`}>
+                                                ({userStats.streamChange.totalPercent > 0 ? '+' : ''}
+                                                {userStats.streamChange.totalPercent.toFixed(1)}% from yesterday)
+                                            </span>
+                                        )}
                                     </p>
                                 </div>
                             </div>

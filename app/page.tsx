@@ -1,6 +1,7 @@
 import { getSpotifyToken } from "@/services/spotifyApi";
 import UpdateStreamsButton from './components/UpdateStreamsButton'
 import Navbar from "./components/navbar";
+import FeaturedPlaylists from "./components/playlists";
 
 export default function Home() {
   return (
@@ -103,6 +104,7 @@ export default function Home() {
                   Start Tracking Now
                 </button>
                 <UpdateStreamsButton/>
+                <FeaturedPlaylists />
               </div>
             </div>
           </div>
