@@ -35,6 +35,10 @@ export interface ProducerStats {
         youtube_streams: number
         track_count: number
     }>
+    trackReleaseDates: Array<{
+        release_date: string
+        track_name: string
+    }>
 }
 
 export async function getProducerStats(userId: string) {
@@ -79,6 +83,7 @@ function calculateStats(tracks: any[], userTracks: any[], recentStreams: any[]):
     let totalSpotify = 0
     let totalYoutube = 0
     let topTracksData: any[] = []
+    let trackReleaseDates: Array<{ release_date: string, track_name: string }> = []
     
     // Map to aggregate streams by role
     const roleStreamsMap = new Map<string, { 
@@ -122,6 +127,14 @@ function calculateStats(tracks: any[], userTracks: any[], recentStreams: any[]):
             youtube_streams: youtubeStreams,
             image_url: track.image_url
         })
+
+        // Collect release dates for streak graph
+        if (track.release_date) {
+            trackReleaseDates.push({
+                release_date: track.release_date,
+                track_name: track.track_name
+            })
+        }
 
         // Find corresponding user_track to get roles
         const userTrack = userTracks.find(ut => ut.track_id === track.id)
@@ -226,7 +239,8 @@ function calculateStats(tracks: any[], userTracks: any[], recentStreams: any[]):
         topTracks: topTracks,
         streamsByRole: streamsByRole,
         streamsByDate: filledStreamsByDate,
-        streamsByArtist: streamsByArtist
+        streamsByArtist: streamsByArtist,
+        trackReleaseDates: trackReleaseDates
     }
 }
 
@@ -281,6 +295,7 @@ function getEmptyStats(): ProducerStats {
         topTracks: [],
         streamsByRole: [],
         streamsByDate: [],
-        streamsByArtist: []
+        streamsByArtist: [],
+        trackReleaseDates: []
     }
 }

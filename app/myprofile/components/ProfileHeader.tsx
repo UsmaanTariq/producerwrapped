@@ -87,7 +87,7 @@ const ProfileHeader = ({ userStats, userProfile, loading: statsLoading }: Profil
 
     return (
         <div className="px-6 md:px-12 py-8 bg-neutral-100">
-            <div className="max-w-7xl mx-auto">
+            <div className="max-w-12xl mx-auto">
                 <div className="bg-white rounded-xl border border-neutral-200 overflow-hidden">
                     {/* Main Profile Section */}
                     <div className="p-8 md:p-10">
