@@ -24,8 +24,8 @@ const StreamsByArtist = ({streamsByArtist}: { streamsByArtist: any[]}) => {
                     angle={-20}
                     height={60}
                     interval={0}
-                    tick={{ fontSize: 11, fill: '#737373' }}
-                    tickFormatter={(value: string) => (value.length > 15 ? `${value.substring(0, 15)}...` : value)}
+                    tick={{ fontSize: 10, fill: '#737373' }}
+                    tickFormatter={(value: string) => (value.length > 12 ? `${value.substring(0, 12)}...` : value)}
                 />
                 <YAxis hide />
                 <Tooltip
